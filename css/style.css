@@ -50,7 +50,29 @@ h5{
 aside{
     padding: 15px;
     
-}main {
+}
+
+canvas{
+  /*width: 870px;
+   height: 408px;*/
+   
+    width: 350px;
+    margin: 10px auto;
+    margin-left: 425;
+    overflow: hidden;
+    border-width: px;
+    border-style: solid;
+    border-color: #dedede #bababa #aaa #bababa;
+    -moz-box-shadow: 0 3px 3px rgba(255,255,255,.1), 0 3px 0 #bbb, 0 4px 0 #aaa, 0 5px 5px #444;
+    -webkit-box-shadow: 0 3px 3px rgba(255,255,255,.1), 0 3px 0 #bbb, 0 4px 0 #aaa, 0 5px 5px #444;
+    box-shadow: 0 3px 3px rgba(255,255,255,.1), 0 3px 0 #bbb, 0 4px 0 #aaa, 0 5px 5px #444;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;    
+    background-color: #f6f6f6;
+    position: relative;
+}
+main {
   /*width: 870px;
    height: 408px;*/
     width: 400px;
