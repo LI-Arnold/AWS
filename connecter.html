@@ -1,33 +1,28 @@
 <!DOCTYPE html>
+<meta charset="utf-8" />
 <html>
-  <head>
-   <!-- <script type="text/javascript" src="js/jquery.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="js/myscript.js" type="text/javascript"></script>
-     <script>
-      io = io.connect()
-
-     </script> -->
-      
-     <link href="css/style.css" type="text/css" rel="stylesheet"/>
-  </head>
+  <link href="css/style.css" type="text/css" rel="stylesheet" />
   <body>
-    <h1> Connecter </h1>
+    <h1>Connecter</h1>
     <main>
-   
       <aside id="start_menu">
-        
-        <form name="general" action=jeu.html >
-         <input type="text" placeholder="Votre psudo" id="champs_ecriture" placeholder="Entrez votre nom" />
-        <input type="password" id="champs_ecriture" name="password" size="60" maxlength="60" placeholder="Entrez Votre mot de pass"/>
-     
-
-        <input type="submit"  href="jeu.html" value="Connecter" id="btn_start"/>
-          
+        <form>
+          <label for="pseudo">Pseudo</label> :
+          <input type="text" name="pseudo" id="pseudo" required />
+          <span id="aidePseudo"></span>
+          <p>
+            <label for="mdp">Mot de passe</label> :
+            <input type="password" name="mdp" id="mdp" required />
+            <span id="aideMdp"></span>
+          </p>
+          <p>
+            <input type="submit" value="Envoyer" />
+            <input type="reset" value="Annuler" />
+          </p>
         </form>
-         
       </aside>
     </main>
 
+    <script src="connecter.js"></script>
   </body>
 </html>

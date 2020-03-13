@@ -1,38 +1,51 @@
 <!DOCTYPE html>
+<meta charset="utf-8" />
 <html>
   <head>
-   <!-- <script type="text/javascript" src="js/jquery.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="js/myscript.js" type="text/javascript"></script>
-     <script>
-      io = io.connect()
-
-     </script> -->
-      
-     <link href="css/style.css" type="text/css" rel="stylesheet"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
-    <h1> Bienvennue Dans Le Jeu De Tron </h1>
+    <h1>Bienvennue Dans Le Jeu De Tron</h1>
     <main>
-   <h5>Inscrivez-Vous</h5>
+      <h5>Inscrivez-Vous</h5>
       <aside id="start_menu">
-        <form action=connecter.html>
-
-         <input type="text" placeholder="Votre nom" id="champs_ecriture" title="Entrez votre nom" pattern="[A-Za-zА-Яа-яЁё]"/>
-          
-           <input type="text" placeholder="Votre prenom" id="champs_ecriture" title="Entrez votre prenom" pattern="[A-Za-zА-Яа-яЁё]"/>
-            <input type="text" placeholder="Votre psudo" id="champs_ecriture" title="Entrez votre psudo" pattern="[A-Za-zА-Яа-яЁё]"/>
-         <input type="email" name="email" id="champs_ecriture" placeholder="Entrez votre email" size="60" maxlength="60" />
-         <input type="email" name="repeatemail" id="champs_ecriture" placeholder="Confirmez votre email " size="60" maxlength="60" />
-   
-         <input type="password" id="champs_ecriture" name="password" size="60" maxlength="60" placeholder="Entrez Votre mot de pass"/>
-<br><br><br>
-        <input type="submit"  href="#" value="s'inscrire" id="btn_start"/>
-          
+        <form>
+			<p>
+            <label for="nom">Votre nom</label> :
+            <input type="text" name="nom" id="nom" required />
+            <span id="aideNom"></span>
+          </p>
+          <p>
+            <label for="prenom">Votre prenom</label> :
+            <input type="text" name="prenom" id="prenom" required />
+            <span id="aidePrenom"></span>
+          </p>
+			<p>
+            <label for="pseudo">Votre pseudo</label> :
+            <input type="text" name="pseudo" id="pseudo" required />
+            <span id="aidePseudo"></span>
+          </p>
+          <p>
+            <label for="email">Votre email</label> :
+            <input type="email" name="email" id="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"/>
+            <span id="aideEmail"></span>
+          </p>
+          <p>
+            <label for="mdp1">Entrer votre mot de passe</label> :
+            <input type="password" name="mdp1" id="mdp1" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Doit contenir au moins un chiffre, un minuscule, une majuscule et au moins 8 caractère ou plus"/>
+          </p>
+          <p>
+            <label for="mdp2">Confirmer votre mot de passe</label> :
+            <input type="password" name="mdp2" id="mdp2" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Doit contenir au moins un chiffre, un minuscule, une majuscule et au moins 8 caractère ou plus"/>
+          </p>
+          <p id="infoMdp"></p>
+          <br /><br /><br />
+          <input type="submit" value="Envoyer" />
+            <input type="reset" value="Annuler" />
         </form>
-         
+        
       </aside>
     </main>
-
+     <script src="enregistrer.js"></script>
   </body>
 </html>
