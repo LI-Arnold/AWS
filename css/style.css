@@ -56,9 +56,10 @@ canvas{
   /*width: 870px;
    height: 408px;*/
    
-    width: 350px;
+    width: 1000px;
+    height: 500px;
     margin: 10px auto;
-    margin-left: 425;
+    margin-left: 225;
     overflow: hidden;
     border-width: px;
     border-style: solid;

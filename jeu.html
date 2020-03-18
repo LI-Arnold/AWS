@@ -1,9 +1,9 @@
 <html>
 <body>
 	<link href="css/style.css" type="text/css" rel="stylesheet"/>
-<h1>new game</h1>
+<h1>Game of "Tron"</h1>
 
-<canvas id="Canvas" width="500" height="500" style="border:5px solid #bababa;">
+<canvas id="Canvas" width="1000" height="500" style="border:5px solid #bababa position:initial;">
 </canvas>
 
 <script>
@@ -12,9 +12,9 @@
 var canvas = document.getElementById("Canvas");
 var CONTEXT = canvas.getContext("2d");
 // 
-var canvas_rectangle = canvas.getBoundingClientRect();
+//var canvas_rectangle = canvas.getBoundingClientRect();
 // taille des sellule points bleau==>  et rouge 
-var taille_cellule = 20;
+var taille_cellule = 5;
 //toille commplet =5
 var nombre_case_horizontal = canvas.width / taille_cellule;
 var nombre_case_vertical = canvas.height / taille_cellule;
@@ -24,8 +24,8 @@ var y0 = 0;
 var grille = null;
 var case_occuper = 1;
 //position de depart
-var position_x = 5;
-var position_y = 9;
+var position_x = nombre_case_horizontal/2;
+var position_y = nombre_case_vertical;
 
 var direction_x = 0; // positive for right
 //vers le haut
@@ -65,9 +65,24 @@ function keyDownHandler(e) {
 
 // disine le contenu de la grille
 var redraw = function() {
-	CONTEXT.fillStyle = "#6efdfd";
+
+	
+
+	//CONTEXT.fillStyle = "#0e0b4d";
+	//CONTEXT.fillRect(0,0,canvas.width,canvas.height);
+
+
+	var grd = CONTEXT.createRadialGradient(position_x*5+2, position_y*5, 5, position_x*5+2, position_y*5, 20);
+	grd.addColorStop(0, "#f9ff9e");
+	grd.addColorStop(1, "#0e0b4d");
+
+	CONTEXT.fillStyle = grd;
 	CONTEXT.fillRect(0,0,canvas.width,canvas.height);
-	CONTEXT.fillStyle = "#6565bf";
+
+
+	CONTEXT.fillStyle = "#949c22";
+
+
 	for ( var i = 0; i < nombre_case_horizontal; ++i ) {
 		for ( var j = 0; j < nombre_case_vertical; ++j ) {
 
@@ -75,8 +90,14 @@ var redraw = function() {
 					CONTEXT.fillRect( x0+i*taille_cellule, y0+j*taille_cellule, taille_cellule, taille_cellule );
 		}
 	}
-	CONTEXT.fillStyle = vivant ? "#6565bf" : "#000000";
+
+
+	CONTEXT.fillStyle = vivant ? grd : "#fbff00";
 	CONTEXT.fillRect( x0+position_x*taille_cellule, y0+position_y*taille_cellule, taille_cellule, taille_cellule );
+
+
+
+	
 
 }
 
@@ -107,7 +128,7 @@ var advance = function() {
 grille = CEATION_GRILLE(nombre_case_vertical,nombre_case_horizontal );
 grille[position_x][position_y] = case_occuper; 
 document.onkeydown = keyDownHandler;
-setInterval( function() { advance(); }, 100  );
+setInterval( function() { advance(); }, 20  );
 
 </script>
 
