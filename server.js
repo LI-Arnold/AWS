@@ -1,90 +1,124 @@
 var express = require('express');
+var session = require('express-session');
 var app = express();
 var  bodyParser = require('body-parser');
 var mysql = require('mysql');
 const bcrypt = require('bcrypt')
-var mot_pass_bas=null;
-app.set('view-enigme','ejs')
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(__dirname + '/public'));
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "tron"
 });
+ con.connect(function(err) {if (err) {throw err  }})
+//moteur de template
+app.set('view-enigme','ejs')
+//body-parser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true
+}));
 
 app.get('/',function(req,res){
-  res.render('enregistrer.ejs');
-});
-
-
+res.render('bienvenu.ejs');
+})
 app.post('/',function(req,res) {
-	 bcrypt.hash (req.body.password, 10, function (err , hash) { 
- try{ console.log('coizejo');
-  con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
-   var sql = "INSERT INTO `joueur` (`psudo`,`nom`,`prenom`,`email`,`mot_pass`) VALUES ('" + req.body.psudo + "','" + req.body.nom + "', '" + req.body.prenom + "','" + req.body.email + "', '" +  hash + "')";
-    con.query(sql,function(error) {
-        if (error) { 
-            console.log(error.message);
-        } else {
-            console.log('success',req.body.password);
-            app.get('/',function(req,res){
-    res.render('enregistrer.ejs');});
-            
-        }
-    });
-  res.redirect('/connecter')
-  // res.render('connecter.ejs', {title: 'Express'})
-  
-  }
-   
+  if(req.body.connecter){ res.redirect('/connecter')   }
+  else if (req.body.inscrivez) { res.redirect('/enregistrer') }
+})
+app.get('/enregistrer',function(req,res){
+    if(req.session.error)
+      { 
+        res.locals.error=req.session.error;
+        req.session.error=undefined;
+      }
+    res.render('enregistrer.ejs');
+  });
+
+
+app.post('/enregistrer',function(req,res) {
+  bcrypt.hash (req.body.password, 10, function (err , hash) { 
+  try{ 
+     
+      var sql = "INSERT INTO `joueur` (`psudo`,`nom`,`prenom`,`email`,`mot_pass`) VALUES ('" + req.body.psudo + "','" + req.body.nom + "', '" + req.body.prenom + "','" + req.body.email + "', '" +  hash + "')";
+      con.query(sql,function(error) {
+           if (error) { res.redirect('/enregistrer')}
+          });
+      res.redirect('/connecter')
+ }
 catch{
   res.redirect('/enregistrer')
   res.render('enregistrer.ejs', {title: 'Express'})}
- 
 })});
  
-app.get('/connecter',function(req,res){
-  res.render('connecter.ejs');
-});
-app.post('/connecter', function  (req, res) {
-	
-	var username = req.body.psudo;
-	var password = req.body.mot_pass ;
-	
-	console.log(username,password)
-	if (username && password) {
-		con.query('SELECT * FROM joueur where psudo = ? ', [username], function(error, results, fields) {
-console.log("hash",req.body.mot_pass)
-console.log("results[0].mot_pass",results[0].mot_pass)
-bcrypt.compare (req.body.mot_pass, results[0].mot_pass, function (err, result)  { 
-        if (result == true) { 
-            res.redirect('/jeu'); 
-        } else { 
-        
-         res.redirect('/connecter') 
-        } 		})
-	
 
-			
-		});
-	} else {
-		 res.redirect('/connecter')
-  			
-		
-		res.end();
+
+
+app.get('/connecter',function(req,res){
+  if(req.session.error)
+  {
+    res.locals.error=req.session.error;
+    req.session.error=undefined;
+  }
+    res.render('connecter.ejs');
+});
+
+
+
+
+
+
+app.post('/connecter', function  (req, res) {
+	if (req.body.psudo && req.body.mot_pass) {
+		con.query('SELECT * FROM joueur where psudo = ? ', [req.body.psudo], function(error, results, fields) {
+          if (results.length > 0 ){
+              req.session.loggedin = true;
+              req.session.username = req.body.psudo;
+              bcrypt.compare (req.body.mot_pass, results[0].mot_pass, function (err, result){ 
+                  if (result == true) {
+                      con.query('SELECT * FROM joueur ', function(error1, results1, fields1) {
+                        console.log(results1)
+                        req.session.error=results1
+                      })
+                    res.redirect('/liste'); } 
+                  else {
+                    req.session.error="mot de pass erroner " 
+                    res.redirect('/connecter') }
+                  })
+            }	
+            else{
+           req.session.error="vous n'éxister pas sur notre base de donnée :( enregistrer vous d'abord !"
+            
+            res.redirect('/enregistrer')}
+          }
+
+          );
+	} 
+  else {
+    req.session.error="il faut saissir le psudo et le mot de pass :( "
+    res.redirect('/connecter')
+  	res.end();
 	}
 });
 
-app.get('/jeu', function(request, res) {
-	 res.render('jeu.ejs');
+app.get('/liste', function(req, res) {
+
+ res.render('liste.ejs');
+})
+app.get('/jeu', function(req, res) {
+  if (req.session.loggedin) {
+     res.render('jeu.ejs');}
+  else {
+    req.session.error="Pour pouvoir jouer il faut d'abord vous connectez "
+    res.redirect('/connecter')
+  }
+  res.end();
 });
+
 
 app.listen(3000,function(){
   console.log('Ecoute sur le port 3000');
@@ -97,7 +131,7 @@ module.exports = app
 
 
 
-
+ 
 
 
 

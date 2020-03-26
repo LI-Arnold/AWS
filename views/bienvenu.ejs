@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>     
+  <head>
+
+      
      <link href="css/style.css" type="text/css" rel="stylesheet"/>
 
 
   </head>
   <body>
-    <h1> Connecter </h1>
+     <h1>Bienvennue Dans Le Jeu De Tron</h1>
     <main>
           <div id="error">
           <% if (locals.error){ %>
@@ -16,11 +18,11 @@
       <aside id="start_menu">
         
         <form name="general"  method="POST" >
-         <input type="text" placeholder="Votre psudo" name="psudo" id="champs_ecriture" placeholder="Entrez votre nom" />
-        <input type="password" id="champs_ecriture" name="mot_pass" size="60" maxlength="60" placeholder="Entrez Votre mot de pass"/>
-     
-
-        <input type="submit"  value="Connecter" id="btn_start"/>
+          
+        <input type="submit"  name="inscrivez" href="enregistrer.ejs" value="inscrivez vous" id="btn_start"/>
+        <br>
+        <input type="submit" name="connecter" href="connecter.ejs" value="Connecter" id="btn_start"/>
+       
 
         </form>
          

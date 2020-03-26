@@ -5,11 +5,16 @@
     <link href="/css/style.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
-    <h1>Bienvennue Dans Le Jeu De Tron</h1>
+     <h1>Inscrivez-Vous</h1>
     <main>
-      <h5>Inscrivez-Vous</h5>
+    
       <aside id="start_menu">
-        <form action="/" method="post">
+                  <div id="error">
+          <% if (locals.error){ %>
+           <p><%= error %></p>
+          <% } %>
+          </div>
+        <form  method="post">
 			
 
          <input type="text" placeholder="Votre nom" name="nom" id="champs_ecriture" title="Entrez votre nom" required /> <span id="aideNom"></span>
