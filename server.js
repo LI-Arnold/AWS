@@ -23,6 +23,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
+
 app.get('/',function(req,res){
 res.render('bienvenu.ejs');
 })
@@ -43,12 +45,16 @@ app.get('/enregistrer',function(req,res){
 app.post('/enregistrer',function(req,res) {
   bcrypt.hash (req.body.password, 10, function (err , hash) { 
   try{ 
+
      
-      var sql = "INSERT INTO `joueur` (`psudo`,`nom`,`prenom`,`email`,`mot_pass`) VALUES ('" + req.body.psudo + "','" + req.body.nom + "', '" + req.body.prenom + "','" + req.body.email + "', '" +  hash + "')";
+      var sql = "INSERT INTO `joueur` (`psudo`,`nom`,`prenom`,`email`,`mot_pass`,`NbrPartieJouer`,`NbrPartiePerdu`,`NbrPartieGagner` ) VALUES ('" + req.body.psudo + "','" + req.body.nom + "', '" + req.body.prenom + "','" + req.body.email + "', '" +  hash + "',0 , 0, 0 )";
+
       con.query(sql,function(error) {
-           if (error) { res.redirect('/enregistrer')}
+           if (error) { 
+            res.redirect('/enregistrer')}
           });
       res.redirect('/connecter')
+    
  }
 catch{
   res.redirect('/enregistrer')
@@ -59,6 +65,7 @@ catch{
 
 
 app.get('/connecter',function(req,res){
+
   if(req.session.error)
   {
     res.locals.error=req.session.error;
@@ -76,15 +83,24 @@ app.post('/connecter', function  (req, res) {
 	if (req.body.psudo && req.body.mot_pass) {
 		con.query('SELECT * FROM joueur where psudo = ? ', [req.body.psudo], function(error, results, fields) {
           if (results.length > 0 ){
+      
+              req.session.psudo = results[0].psudo;
+              req.session.email = results[0].nom;
+              req.session.prenom = results[0].prenom;
+              req.session.email = results[0].email;
+              req.session.mot_pass = results[0].mot_pass;
+              req.session.NbrPartieGagner = results[0].NbrPartieGagner;
+              req.session.NbrPartiePerdu = results[0].NbrPartiePerdu;
+              req.session.NbrPartieJouer = results[0].NbrPartieJouer;
               req.session.loggedin = true;
               req.session.username = req.body.psudo;
+             
               bcrypt.compare (req.body.mot_pass, results[0].mot_pass, function (err, result){ 
                   if (result == true) {
                       con.query('SELECT * FROM joueur ', function(error1, results1, fields1) {
-                        console.log(results1)
                         req.session.error=results1
                       })
-                    res.redirect('/liste'); } 
+                    res.redirect('/profil'); } 
                   else {
                     req.session.error="mot de pass erroner " 
                     res.redirect('/connecter') }
@@ -105,9 +121,9 @@ app.post('/connecter', function  (req, res) {
 	}
 });
 
-app.get('/liste', function(req, res) {
-
- res.render('liste.ejs');
+app.get('/profil', function(req, res) {
+ console.log("session" ,req.session.psudo)
+ res.render('profil.ejs',{psudo:req.session.psudo,NbrPartieJouer:req.session.NbrPartieJouer,NbrPartieGagner:req.session.NbrPartieGagner,NbrPartiePerdu:req.session.NbrPartiePerdu});
 })
 app.get('/jeu', function(req, res) {
   if (req.session.loggedin) {
