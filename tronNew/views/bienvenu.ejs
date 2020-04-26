@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+      
+     <link href="css/style.css" type="text/css" rel="stylesheet"/>
+
+
+  </head>
+  <body>
+     <h1>Bienvennue Dans Le Jeu De Tron</h1>
+    <main>
+          <div id="error">
+          <% if (locals.error){ %>
+           <p><%= error %></p>
+          <% } %>
+          </div>
+      <aside id="start_menu">
+        
+        <form name="general"  method="POST" >
+          
+        <input type="submit"  name="inscrivez" href="enregistrer.ejs" value="inscrivez vous" id="btn_start"/>
+        <br>
+        <input type="submit" name="connecter" href="connecter.ejs" value="Connecter" id="btn_start"/>
+       
+
+        </form>
+         
+      </aside>
+    </main>
+
+  </body>
+</html>
