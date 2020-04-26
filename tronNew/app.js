@@ -133,7 +133,7 @@ app.post('/client', function  (req, res) {
 //donner la page html au joueur
 // Send the client html.
 app.get('/jeu', function(req, res) {
-   res.sendfile(__dirname + '/client.html')
+  res.render('client.ejs');
 })
 
 /*app.get('/liste', function(req, res) {

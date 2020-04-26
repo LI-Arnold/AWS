@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>io = io.connect()
+$(document).ready(function(){
+    //La partie de l'utilisation canvas
+    var canvas = $("#canvas")[0],
+        context = canvas.getContext("2d"),
+        width = $("#canvas").width(), //La largeur de balis canvas
+        height = $("#canvas").height(),//La langeur de balis canvas
+        cw = 5, // la taille de cellule de tron
+        direction, //la direction du tron (left|right|up|down)
+        playerName,//nom de joueur
+        playerColor;//couleur de joueur
+   // var isOffline;
+    var tabIndex = [];
+    var nomJoueur=[];
+    io.on('connected', function(data){
+        playerName = data;
+        if($(window).DeviceMotionEvent != undefined) {
+            
+        }
+         startKeyController();
+       // isOffline = true;
+       // playerOffline.init();
+    });
+    io.on('update', function(data){
+        //construire canvas avec donnée
+        // les donné serons en JSON et seron un ensemble de coordonnée + nom
+        var tabJoueur = JSON.parse(data);
+        for(var i = 0; i<tabJoueur.length; i++) {
+            var traceAdded = false;
+      var newJData = tabJoueur[i];
+            for(var j = 0; j<tabIndex.length; j++) {
+                if (newJData.nom===tabIndex[j].nom) {
+                    tabIndex[j].trace = tabIndex[j].trace.concat(newJData.trace);
+                    traceAdded = true;
+                }
+            }
+            if (!traceAdded) {
+              if(newJData.nom === playerName) {
+                newJData.col = "#fc776d";
+
+              } else {
+                newJData.col = "#6affea";
+                    }
+                       var html ="<li style='color:"+newJData.col+"' id='"+newJData.nom+"'>Vous: "+newJData.nom+"</li>";
+                    $(".joueur").prepend(html);
+                tabIndex.push(newJData);
+            }
+
+        }
+        draw();
+    //update
+    });
+
+    io.on('start', function(){
+     //   isOffline = false;
+        $("#block_loader").fadeOut(600,function(){
+            $(".joueur").fadeIn(500);
+        });
+        context.clearRect(0, 0, width, height);
+       // init();
+
+    });
+
+    io.on('lost', function(data){
+    //verifier son propre nom est present
+        //alert("Vous avez perdu");
+        for(var i = 0; i<data.length; i++) {
+            $("#"+data[i]).css({'text-decoration':'line-through'});
+            if(data[i] === playerName){
+                //alert("Vous avez perdu");
+                $(document).unbind("keydown");
+              
+                youLost();
+            }
+        }
+        console.log(data);
+     });
+
+    io.on('win', function(data){
+    //recois le nom du gagnant
+        if(data === playerName){
+            //alert("Vous avez gagné !!!");
+            $(document).unbind("keydown");
+            youWin();
+        }
+    });
+    io.on('end', function(){
+    //code a exécuter quand le jeu est finis
+        $(document).unbind("keydown");
+        $("#message_win").text("Jeu est Fini");
+        youWin();
+    });
+    //logique de base et le rendu
+    function draw(){
+        //dessinons tron
+        for(var i = 0; i<tabIndex.length; i++) {
+            for(var j = 0; j<tabIndex[i].trace.length; j++) {
+                context.fillStyle = tabIndex[i].col;
+                context.fillRect(tabIndex[i].trace[j].x*cw, tabIndex[i].trace[j].y*cw, cw, cw);
+            }
+        }
+    }
+
+    $("#btn_start").click(function(e){
+        var pName;
+        $("#player_name").val() == "" ?  pName = "Player 1" :  pName = $("#player_name").val();
+        io.emit('ready', pName);
+       // playerColor = $("#player_color").val();
+        e.preventDefault();
+        $("aside").fadeOut(300,function(){
+            $("main").animate(
+              {
+                width: "870px",
+                height: "408px"
+              },
+            300,function(){
+                    $("#block_jeu").fadeIn(300);
+            });
+        });
+    });
+
+    $("#restart_game").click(function(e){
+        tabIndex = [];
+        nomJoueur=[];
+        io.emit('ready', playerName);
+        e.preventDefault();
+        $("#block_loader").show();
+        $(".joueur").hide();
+        $(".joueur > *").remove();
+        $("#restart_menu").fadeOut(300,function(){
+            $("main").animate(
+                {
+                    width: "870px",
+                    height: "408px"
+                },
+                300,function(){
+                    $("#block_jeu").fadeIn(300);
+                });
+        });
+    });
+    $("#get_main_menu").click(function(e){
+        tabIndex = [];
+        nomJoueur=[];
+        e.preventDefault();
+        $("#block_loader").show();
+        $(".joueur").hide();
+        $(".joueur > *").remove();
+        $("#restart_menu").fadeOut(300,function(){
+            $("main").animate(
+                {
+                    width: "342px",
+                    height: "237px"
+                },
+                300,function(){
+                    $("#start_menu").fadeIn(300);
+                });
+        });
+    }); 
+    $("#get_menu").click(function(){
+           $("#get_menu").fadeOut(200,function(){
+            $("#block_jeu").fadeOut(200,function(){
+                $("main").animate(
+                    {
+                        width: "350px",
+                        height: "150px"
+                    },
+                    300,function(){
+                        $("#player_name").val(playerName);
+                      //  $("#player_color").val(playerColor);
+
+                        $("#restart_menu").fadeIn(300);
+                    }
+                );
+            });
+        });
+    });
+
+    function youLost(){
+        $("#message_err").fadeIn(200, function(){
+            setTimeout(function(){
+                $("#message_err").fadeOut(200, function(){
+                    $("#get_menu").fadeIn(200);
+                });
+            }, 1000);
+        });
+    }
+    function youWin(){
+        $("#message_win").fadeIn(200, function(){
+            setTimeout(function(){
+                $("#message_win").fadeOut(200, function(){
+                    $("#get_menu").fadeIn(200);
+                });
+            }, 1000);
+        });
+    }
+
+
+
+
+
+    function startKeyController() {
+         //les boutons de contrôle
+        $(document).keydown(function (e) {
+            var key = e.keyCode;//определение текущего кода кнопки
+            var ObjectData = new Object();
+            ObjectData.playerName = playerName;
+            if (key == "37" && direction != "right") {
+                direction = "left";
+            }
+            else if (key == "38" && direction != "40") {
+                direction = "38";
+            }
+            else if (key == "39" && direction != "left") {
+                direction = "right";
+            }
+            else if (key == "40" && direction != "38") {
+                direction = "40";
+            }
+             ObjectData.direction = direction;
+             io.emit('change-direction', ObjectData);
+        });
+    }
+
+});
+
+</script>
+
+      
+     <link href="css/style.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <h1>Jeu Tron</h1>
+    <main>
+      <section id="block_jeu">
+        <section id="info_joueur">
+          <p>Joueur Online:</p>
+          <section id="block_loader">
+            <div id="loader"></div>
+          </section>
+          <ul class="joueur">
+
+
+          </ul>
+        </section>  
+        <canvas id="canvas" width="700" height="400" style="border:10px solid red position:initial;"></canvas>
+        <div class="clear"></div>
+        <p id="message_err">Vous avez perdu</p>
+        <p id="message_win">Vous avez gagné !</p>
+        <p id="get_menu">Main Menu</p>
+      </section>
+      <aside id="start_menu">
+        <form name="general"  method="POST" >
+         <input type="text" placeholder="Votre Nom" name="psudo" id="player_name" title="Entrez votre nom" />
+        <input type="password" id="champs_ecriture" name="mot_pass" size="60" maxlength="60" placeholder="Entrez Votre mot de pass"/>
+          <input type="submit"  href="#" value="Connecter" id="btn_start"/>       
+        </form>
+         
+      </aside>
+      <section id="restart_menu">
+        <a class="restart_menu_button" id="restart_game">Restart Game</a>
+        <a class="restart_menu_button" id="get_main_menu">Parammetre</a>
+      </section>
+    </main>
+
+  </body>
+</html>
