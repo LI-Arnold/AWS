@@ -9,7 +9,7 @@
     "coffee-script": "^1.12.7",
     "connect": "^3.7.0",
     "ejs": "^3.0.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "express.io": "^1.1.13",
     "list": "^2.0.19",
